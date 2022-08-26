@@ -210,8 +210,8 @@ class SeparableConv4D(nn.Module):
 
         B, C, _, H, W = x.shape
         if self.is_proj:
-            x = self.proj(x.view(B, W, -1, W))
-
+            #x = self.proj(x.view(B, W, -1, W))   the first W should be C
+            x = self.proj(x.view(B, C, -1, W))
         x = x.view(B, -1, U, V, H, W)
 
         return x

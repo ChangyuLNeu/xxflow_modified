@@ -174,6 +174,12 @@ class BaseTrainer:
             if epoch % self.cfg.CKPT_INTERVAL == 0 and self._is_main_process():
                 self._save_checkpoints("epoch", epoch)
 
+                #test code
+                print(f'train,py')
+                print(f'schedualer: {self.scheduler.state_dict()}')
+                print(self.optimizer.state_dict()['param_groups'])
+                #test code
+
         self.writer.close()
         return best_model
 
@@ -505,7 +511,9 @@ class BaseTrainer:
             use_cfg=use_cfg,
         )
 
-        self.train(total_iterations=total_iterations, start_iteration=start_iteration)
+        #self.train(total_iterations=total_iterations, start_iteration=start_iteration)
+        #m1:use new train_resume to replace train in resuming part
+        self.train_resume(total_iterations=total_iterations, start_iteration=start_iteration)
 
 
 class Trainer(BaseTrainer):
@@ -597,6 +605,43 @@ class Trainer(BaseTrainer):
         print("-" * 80)
 
         best_model = self._trainer(total_iterations, start_iteration)
+
+        print("Training complete!")
+        print(f"Average training time: {sum(self.times)/len(self.times)}")
+        print(f"Total training time: {sum(self.times)}")
+
+        torch.save(
+            best_model.state_dict(),
+            os.path.join(self.cfg.CKPT_DIR, self.model_name + "_best_final.pth"),
+        )
+
+        print("Saved best model!\n")
+
+    def train_resume(
+        self,
+        loss_fn=None,
+        optimizer=None,
+        scheduler=None,
+        total_iterations=None,
+        start_iteration=None,
+    ):
+        """
+        used in resume_training() which replaces train()
+        delete three setup..()
+        """
+        #self._setup_device()                                  
+        #self._setup_model()                                   
+        #self._setup_training(loss_fn, optimizer, scheduler)   
+
+
+        os.makedirs(self.cfg.CKPT_DIR, exist_ok=True)    #create file dictory
+        os.makedirs(self.cfg.LOG_DIR, exist_ok=True)
+
+        print("Training config:\n")
+        print(self.cfg)
+        print("-" * 80)
+
+        best_model = self._trainer(total_iterations, start_iteration)    #_trainer() is set in _setup_training()
 
         print("Training complete!")
         print(f"Average training time: {sum(self.times)/len(self.times)}")

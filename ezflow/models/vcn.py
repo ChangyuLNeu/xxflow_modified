@@ -122,9 +122,10 @@ class VCN(nn.Module):
         self.flow_regressors.append(
             Soft4DFlowRegression(
                 [f_dim_b2 * size[0], size[1] // 4, size[2] // 4],
-                max_disp=self.max_disps[0],
+                #max_disp=self.max_disps[0],      original version, differ from paper writer
+                max_disp=self.max_disps[4],
                 entropy=cfg.DECODER.ENTROPY,
-                factorization=self.factorization,
+                #factorization=self.factorization,    original version, differ from paper writer
             )
         )
 
