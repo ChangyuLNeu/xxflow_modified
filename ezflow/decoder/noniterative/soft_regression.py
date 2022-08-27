@@ -217,6 +217,14 @@ class Soft4DFlowRegression(nn.Module):
         B, U, V, H, W = x.shape
 
         x = F.softmax(x.view(B, -1, H, W), 1).view(B, U, V, H, W)
+        #test code
+        print('soft_regression.py')
+        print(f'x.shape: {x.shape}')
+        print(f'self.flow_x: {self.flow_x}')
+        print(f'self.flow_y: {self.flow_y}')
+        #test code
+
+
         out_x = torch.sum(torch.sum(x * self.flow_x, 1), 1, keepdim=True)
         out_y = torch.sum(torch.sum(x * self.flow_y, 1), 1, keepdim=True)
 
