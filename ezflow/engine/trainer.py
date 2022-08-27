@@ -275,7 +275,11 @@ class BaseTrainer:
             loss = self.loss_fn(pred, target)
 
         self.optimizer.zero_grad()
-
+        #test code
+        print('trainer.py')
+        print(loss.device)
+        print(loss.is_cuda)
+        #test code
         self.scaler.scale(loss).backward()
         self.scaler.unscale_(self.optimizer)
 
