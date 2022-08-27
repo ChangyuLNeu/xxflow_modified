@@ -168,6 +168,16 @@ class Soft4DFlowRegression(nn.Module):
             padding=(self.w_size, self.w_size, 0),
         )
 
+
+        #test code
+        print('regressor.py init')
+        print(f'size: {size}')
+        print(f'factorization: {factorization}')
+        print(f'max_disp: {max_disp}')
+        print(f'flow_x.shape: {flow_x.shape}')
+        print(f'flow_y.shape: {flow_y.shape}')
+        #test code
+
     @classmethod
     def from_config(cls, cfg):
         return {
@@ -196,6 +206,12 @@ class Soft4DFlowRegression(nn.Module):
         """
         B, U, V, H, W = x.shape
         orig_x = x
+
+        #test code
+        print('regressor.py forward')
+        print(f'x.shape1: {x.shape}')
+        
+        #test code
 
         if self.truncated:
             # truncated softmax
