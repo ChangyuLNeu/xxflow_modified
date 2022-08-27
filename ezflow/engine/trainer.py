@@ -474,6 +474,79 @@ class BaseTrainer:
 
         return (total_iterations, start_iteration)
 
+    def _reload_trainer_states_new(
+        self,
+        consolidated_ckpt=None,
+        model_ckpt=None,
+        optimizer_ckpt=None,
+        total_iterations=None,
+        start_iteration=None,
+        scheduler_ckpt=None,
+        use_cfg=False,
+    ):
+        consolidated_ckpt = (
+            self.cfg.RESUME_TRAINING.CONSOLIDATED_CKPT
+            if use_cfg is True
+            else consolidated_ckpt
+        )
+
+        if consolidated_ckpt is not None:
+
+            ckpt = torch.load(consolidated_ckpt, map_location=torch.device("cpu"))
+
+            model_state_dict = ckpt["model_state_dict"]
+            optimizer_state_dict = ckpt["optimizer_state_dict"]
+
+            if "scheduler_state_dict" in ckpt.keys():
+                scheduler_state_dict = ckpt["scheduler_state_dict"]
+
+            if "epochs" in ckpt.keys():
+                start_epoch = ckpt["epochs"] + 1
+
+        else:
+
+            assert (
+                model_ckpt is not None and optimizer_ckpt is not None
+            ), "Must provide a consolidated ckpt or model and optimizer ckpts separately"
+
+            model_state_dict = torch.load(model_ckpt, map_location=torch.device("cpu"))
+            optimizer_state_dict = torch.load(
+                optimizer_ckpt, map_location=torch.device("cpu")
+            )
+
+            if scheduler_ckpt is not None:
+                scheduler_state_dict = torch.load(
+                    scheduler_ckpt, map_location=torch.device("cpu")
+                )
+
+        self.model.load_state_dict(model_state_dict)
+        
+        self._setup_device()            #new added
+        self._setup_model()            #new added
+        self._setup_training()           #here create optimizer and schedualer
+
+        self.optimizer.load_state_dict(optimizer_state_dict)    #load optimizer state
+
+        if self.scheduler is not None:
+            self.scheduler.load_state_dict(scheduler_state_dict)      #load scheduler state
+
+        if total_iterations is None and use_cfg:
+            total_iterations = (
+                self.cfg.RESUME_TRAINING.NUM_STEPS
+                if self.cfg.RESUME_TRAINING.NUM_STEPS is not None
+                else self.cfg.RESUME_TRAINING.EPOCHS
+            )
+
+        if start_iteration is None and use_cfg:
+            start_iteration = (
+                self.cfg.RESUME_TRAINING.START_STEP
+                if self.cfg.RESUME_TRAINING.START_STEP is not None
+                else self.cfg.RESUME_TRAINING.START_EPOCH
+            )
+
+        return (total_iterations, start_iteration)
+
+
     def resume_training(
         self,
         consolidated_ckpt=None,
@@ -505,7 +578,7 @@ class BaseTrainer:
             Whether to use the config file or not. Defaults to False.
         """
 
-        total_iterations, start_iteration = self._reload_trainer_states(
+        total_iterations, start_iteration = self._reload_trainer_states_new(
             consolidated_ckpt=consolidated_ckpt,
             model_ckpt=model_ckpt,
             optimizer_ckpt=optimizer_ckpt,
