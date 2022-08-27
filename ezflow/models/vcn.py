@@ -258,8 +258,14 @@ class VCN(nn.Module):
                 self.max_disps[i],
                 factorization=self.cfg.FACTORIZATION,
             )
+            #test code
+            print('vcn.py')
+            print(f'cost.shape:{cost.shape}')
+            #test code
             cost = self.butterfly_filters[i](cost)
+            print(f'cost.shape:{cost.shape}')
             cost = self.sep_conv_4d_filters[i](cost)
+            print(f'cost.shape:{cost.shape}')
 
             B, C, U, V, H, W = cost.shape
             cost = cost.view(-1, U, V, H, W)
