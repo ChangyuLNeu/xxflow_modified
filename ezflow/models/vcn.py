@@ -252,12 +252,20 @@ class VCN(nn.Module):
             else:
                 features2 = feature_pyramid2[i]
 
-            cost = self._corr_fn(
-                feature_pyramid1[i],
-                features2,
-                self.max_disps[i],
-                factorization=self.cfg.FACTORIZATION,
-            )
+
+            if i != 0:                                     #when change self.factotization which not equal to 1,only level 0 need fac, so other level should remove fac when cumpute corr_fn
+                cost = self._corr_fn(
+                    feature_pyramid1[i],
+                    features2,
+                    self.max_disps[i],
+                )
+            else:
+                cost = self._corr_fn(
+                    feature_pyramid1[i],
+                    features2,
+                    self.max_disps[i],
+                    factorization=self.cfg.FACTORIZATION,
+                )
             #test code
             print('vcn.py')
             print(f'cost.shape:{cost.shape}')
