@@ -210,7 +210,7 @@ class Soft4DFlowRegression(nn.Module):
         #test code
         print('regressor.py forward')
         print(f'x.shape1: {x.shape}')
-        
+
         #test code
 
         if self.truncated:
@@ -236,8 +236,8 @@ class Soft4DFlowRegression(nn.Module):
         #test code
         print('soft_regression.py')
         print(f'x.shape: {x.shape}')
-        print(f'self.flow_x: {self.flow_x}')
-        print(f'self.flow_y: {self.flow_y}')
+        print(f'self.flow_x.shape: {self.flow_x.shape}')
+        print(f'self.flow_y.shape: {self.flow_y.shape}')
         #test code
 
 
