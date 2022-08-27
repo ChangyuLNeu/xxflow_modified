@@ -170,12 +170,12 @@ class Soft4DFlowRegression(nn.Module):
 
 
         #test code
-        print('regressor.py init')
-        print(f'size: {size}')
-        print(f'factorization: {factorization}')
-        print(f'max_disp: {max_disp}')
-        print(f'flow_x.shape: {flow_x.shape}')
-        print(f'flow_y.shape: {flow_y.shape}')
+        #print('regressor.py init')
+        #print(f'size: {size}')
+        #print(f'factorization: {factorization}')
+        #print(f'max_disp: {max_disp}')
+        #print(f'flow_x.shape: {flow_x.shape}')
+        #print(f'flow_y.shape: {flow_y.shape}')
         #test code
 
     @classmethod
@@ -208,9 +208,8 @@ class Soft4DFlowRegression(nn.Module):
         orig_x = x
 
         #test code
-        print('regressor.py forward')
-        print(f'x.shape1: {x.shape}')
-
+        #print('regressor.py forward')
+        #print(f'x.shape1: {x.shape}')
         #test code
 
         if self.truncated:
@@ -234,10 +233,10 @@ class Soft4DFlowRegression(nn.Module):
 
         x = F.softmax(x.view(B, -1, H, W), 1).view(B, U, V, H, W)
         #test code
-        print('soft_regression.py')
-        print(f'x.shape: {x.shape}')
-        print(f'self.flow_x.shape: {self.flow_x.shape}')
-        print(f'self.flow_y.shape: {self.flow_y.shape}')
+        #print('soft_regression.py')
+        #print(f'x.shape: {x.shape}')
+        #print(f'self.flow_x.shape: {self.flow_x.shape}')
+        #print(f'self.flow_y.shape: {self.flow_y.shape}')
         #test code
 
 
