@@ -75,7 +75,8 @@ def crop(
 
     return img1, img2, flow, valid
 '''
-def crop(                                              #solve crop size > shape
+                                             
+def crop(                                     #solve crop size > shape
     img1,
     img2,
     flow,
@@ -122,9 +123,9 @@ def crop(                                              #solve crop size > shape
     output_shape = list(img1.shape[:])
     output_shape[0] = crop_size[0] 
     output_shape[1] = crop_size[1] 
-    output_img1 = torch.zeros(output_shape, dtype = int)
-    output_img2 = torch.zeros(output_shape, dtype = int)
-    output_flow = torch.zeros(crop_size[0], crop_size[1], 2, dtype = int)
+    output_img1 = np.zeros(output_shape, dtype = int)
+    output_img2 = np.zeros(output_shape, dtype = int)
+    output_flow = np.zeros((crop_size[0], crop_size[1], 2), dtype = int)
     
     H, W = img1.shape[:2]
     
