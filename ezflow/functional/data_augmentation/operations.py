@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from torchvision.transforms import ColorJitter
-
-
+'''
 def crop(
     img1,
     img2,
@@ -75,6 +74,106 @@ def crop(
         valid = valid[y0 : y0 + crop_size[0], x0 : x0 + crop_size[1]]
 
     return img1, img2, flow, valid
+'''
+def crop(                                              #solve crop size > shape
+    img1,
+    img2,
+    flow,
+    crop_size=(256, 256),
+    crop_type="center",
+    sparse_transform=False,
+    valid=None,
+):
+
+    """
+    Function to crop the images and flow field
+
+    Parameters
+    -----------
+    img1 : PIL Image or numpy.ndarray
+        First of the pair of images
+    img2 : PIL Image or numpy.ndarray
+        Second of the pair of images
+    flow : numpy.ndarray
+        Flow field
+    valid : numpy.ndarray
+        Valid flow mask
+    crop_size : tuple
+        Size of the crop
+    crop_type : str
+        Type of cropping
+    sparse_transform : bool
+        Whether to apply sparse transform
+
+    Returns
+    -------
+    img1 : PIL Image or numpy.ndarray
+        Augmented image 1
+    img2 : PIL Image or numpy.ndarray
+        Augmented image 2
+    flow : numpy.ndarray
+        Augmented flow field
+
+    """
+
+    if sparse_transform is True:
+        assert valid is not None, "Valid flow mask is required for sparse transform"
+    
+    output_shape = list(img1.shape[:])
+    output_shape[0] = crop_size[0] 
+    output_shape[1] = crop_size[1] 
+    output_img1 = torch.zeros(output_shape, dtype = int)
+    output_img2 = torch.zeros(output_shape, dtype = int)
+    output_flow = torch.zeros(crop_size[0], crop_size[1], 2, dtype = int)
+    
+    H, W = img1.shape[:2]
+    
+
+    if crop_type.lower() == "center":
+        y0 = max(0, int(H / 2 - crop_size[0] / 2))
+        x0 = max(0, int(W / 2 - crop_size[1] / 2))
+
+    else:
+        if sparse_transform is True:
+            margin_y = 20
+            margin_x = 50
+            y0 = np.random.randint(0, img1.shape[0] - crop_size[0] + margin_y)
+            x0 = np.random.randint(-margin_x, img1.shape[1] - crop_size[1] + margin_x)
+            y0 = max(0, np.clip(y0, 0, img1.shape[0] - crop_size[0]))
+            x0 = max(0, np.clip(x0, 0, img1.shape[1] - crop_size[1]))
+
+        else:                                               #这里对crop_size>shape进行修改
+            if H - crop_size[0] > 0:
+                y0 =  np.random.randint(0, img1.shape[0] - crop_size[0] +1)
+            else:
+                y0 = 0
+                
+            if W - crop_size[1] > 0:
+                x0 = np.random.randint(0, img1.shape[1] - crop_size[1] + 1)
+            else:
+                x0 = 0
+            
+    img1 = img1[y0 : y0 + crop_size[0], x0 : x0 + crop_size[1]]
+    img2 = img2[y0 : y0 + crop_size[0], x0 : x0 + crop_size[1]]
+    flow = flow[y0 : y0 + crop_size[0], x0 : x0 + crop_size[1]]
+    
+    if H - crop_size[0] <= 0:
+        insert_y0 = np.abs(int(H / 2 - crop_size[0] / 2))
+    else:
+        insert_y0 = 0
+    if W - crop_size[1] <= 0:
+        insert_x0 = np.abs(int(W / 2 - crop_size[1] / 2))
+    else:
+        insert_x0 = 0
+
+    if sparse_transform is True:
+        valid = valid[y0 : y0 + crop_size[0], x0 : x0 + crop_size[1]]
+        
+    output_img1[insert_y0: insert_y0+img1.shape[0], insert_x0: insert_x0+img1.shape[1]] = img1
+    output_img2[insert_y0: insert_y0+img1.shape[0], insert_x0: insert_x0+img1.shape[1]] = img2
+    output_flow[insert_y0: insert_y0+img1.shape[0], insert_x0: insert_x0+img1.shape[1]] = flow
+
+    return output_img1, output_img2, output_flow, valid
 
 
 def color_transform(
