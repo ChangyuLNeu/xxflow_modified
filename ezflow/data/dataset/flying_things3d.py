@@ -123,7 +123,7 @@ class FlyingThings3DSubset(BaseDataset):
     aug_param : :obj:`dict`, optional
         The parameters for data augmentation
     """
-
+    '''
     def __init__(
         self,
         root_dir,
@@ -141,6 +141,35 @@ class FlyingThings3DSubset(BaseDataset):
     ):
         super(FlyingThings3DSubset, self).__init__(
             augment, aug_params, is_prediction, init_seed, append_valid_mask
+        )
+    '''
+    def __init__(
+        self,
+        root_dir,
+        split="training",
+        is_prediction=False,  
+        init_seed=False,    
+        append_valid_mask=False,  
+        crop=False,                #add
+        crop_size=(256, 256),     #add
+        crop_type="center",       #add
+        augment=True,    
+        aug_params={    
+            "color_aug_params": {"aug_prob": 0.2},
+            "eraser_aug_params": {"aug_prob": 0.5},
+            "spatial_aug_params": {"aug_prob": 0.8},
+        },
+    ):
+        super(FlyingThings3DSubset, self).__init__(
+            init_seed=init_seed,    
+            is_prediction=is_prediction,     
+            append_valid_mask=append_valid_mask,   
+            crop=crop,              #add
+            crop_size=crop_size,    #add
+            crop_type=crop_type,    #add
+            augment=augment,
+            aug_params=aug_params,
+            sparse_transform=False,
         )
         assert (
             split.lower() == "training" or split.lower() == "validation"
